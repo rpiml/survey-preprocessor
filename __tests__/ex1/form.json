@@ -1,0 +1,40 @@
+{
+  "firstPage": "start",
+  "pages": [
+    {
+      "id": "start",
+      "questions": [
+        {
+          "id": "like-art",
+          "question": "Do you like art?",
+          "type": "choice",
+          "answers": [
+            "no",
+            "yes"
+          ]
+        },
+        {
+          "id": "like-computer",
+          "question": "Do you like computer?",
+          "type": "choice",
+          "answers": [
+            "no",
+            "yes"
+          ]
+        },
+        {
+          "id": "went-to",
+          "question": "Where did you go?",
+          "type": "choice",
+          "answers": [
+            "fine-arts-school",
+            "computer-school",
+            "digital-arts-school",
+            "culinary-college"
+          ]
+        }
+      ],
+      "next": "done"
+    }
+  ]
+}

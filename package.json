@@ -1,0 +1,104 @@
+{
+  "name": "survey-preprocessor",
+  "version": "0.0.0",
+  "description": "OkCollege Survey Preprocessor",
+  "engineStrict": true,
+  "engines": {
+    "node": ">= 6.2"
+  },
+  "main": "./dist/index.js",
+  "devDependencies": {
+    "babel-cli": "~6.18.0",
+    "babel-core": "~6.20.0",
+    "babel-eslint": "~7.1.1",
+    "babel-jest": "~17.0.2",
+    "babel-plugin-transform-async-to-generator": "~6.16.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "~6.18.0",
+    "babel-plugin-transform-flow-strip-types": "~6.18.0",
+    "babel-plugin-transform-runtime": "~6.15.0",
+    "babel-preset-stage-3": "~6.17.0",
+    "eslint": "~3.11.1",
+    "eslint-config-airbnb-base": "~10.0.1",
+    "eslint-plugin-flowtype": "~2.29.1",
+    "eslint-plugin-import": "~2.2.0",
+    "eslint-plugin-no-async-without-await": "~1.2.0",
+    "flow-bin": "~0.37.0",
+    "jest": "~17.0.3"
+  },
+  "scripts": {
+    "clean": "rm -rf coverage dist tmp",
+    "lint": "eslint .",
+    "postlint": "npm run typecheck",
+    "typecheck": "flow check",
+    "pretest": "npm run lint",
+    "prepublish": "babel src/**/*.js -d dist",
+    "test": "npm run test-only",
+    "test-only": "jest --coverage",
+    "test:watch": "jest --watch",
+    "build": "babel src/**/*.js -d dist",
+    "build:watch": "babel --watch src/**/*.js -d dist"
+  },
+  "author": "Severin Ibarluzea",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node",
+    "automock": false,
+    "moduleFileExtensions": [
+      "js",
+      "json"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
+  },
+  "dependencies": {
+    "amqplib-rpc": "^2.0.3",
+    "babel-runtime": "~6.20.0",
+    "csv-stringify": "^1.0.4",
+    "node-uuid": "^1.4.7",
+    "okc-js": "https://github.com/rpiml/okc-js.git",
+    "pg-promise": "^5.5.0",
+    "redis": "^2.6.3"
+  },
+  "babel": {
+    "plugins": [
+      [
+        "transform-es2015-modules-commonjs"
+      ],
+      [
+        "transform-flow-strip-types"
+      ],
+      [
+        "transform-async-to-generator"
+      ],
+      [
+        "transform-runtime",
+        {
+          "polyfill": false,
+          "regenerator": true
+        }
+      ]
+    ],
+    "retainLines": true,
+    "env": {
+      "production": {
+        "comments": false,
+        "minified": true
+      }
+    }
+  }
+}
