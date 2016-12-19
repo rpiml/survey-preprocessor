@@ -22,6 +22,10 @@
       1,
       "always"
     ],
+    "camelcase": 1,
+    "no-unused-vars": 1,
+    "import/prefer-default-export": 1,
+    "padded-blocks": 1,
     "flowtype/space-after-type-colon": [
       1,
       "always"

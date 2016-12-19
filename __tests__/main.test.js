@@ -1,6 +1,6 @@
 // @flow
 
-import { psql } from 'okc-js';
+import { psql } from '@seveibar/okc-js';
 import ex1_p1 from './ex1/form_predict1.json';
 import ex1_p2 from './ex1/form_predict2.json';
 import ex1_p3 from './ex1/form_predict3.json';

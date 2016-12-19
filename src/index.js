@@ -1,7 +1,7 @@
 // @flow
 
-import { psql, rmq } from 'okc-js';
-import { convertCSV } from './parse';
+import { psql, rmq } from '@seveibar/okc-js';
+import { constructCSVs } from './parse';
 
 
 // rmq.replyToRPC("predictor-preprocessor", (rpcMessageWithSurvey) => {
