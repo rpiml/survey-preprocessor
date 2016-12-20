@@ -22,6 +22,7 @@ import type {
   UserSurveyAnswers,
   SurveyResponse,
   SurveySchema,
+  FeatureType,
 } from './types.flow';
 
 /*
@@ -36,10 +37,10 @@ import type {
  */
 export async function getFeaturesCSV(schema: SurveySchema): Promise<string> {
   // First row header
-  const csv = [['feature', 'categories']];
-  schema.questions.forEach((question) => {
+  let csv = [['feature', 'categories']];
+  csv = csv.concat(schema.questions.map((question) => {
     const questionType = getFeatureType(question.type);
-    if (questionType !== 'category') {
+    if (questionType !== 'categorical') {
       return [question.id, questionType];
     }
     if (!question.categories) {
@@ -47,7 +48,7 @@ export async function getFeaturesCSV(schema: SurveySchema): Promise<string> {
     }
     // Return all the possible categories after the definition
     return [question.id, questionType, question.categories.length].concat(question.categories);
-  });
+  }));
 
   return await convertToCSV(csv);
 }
@@ -176,7 +177,7 @@ function convertToUserSurveyAnswers(surveyResponse: SurveyResponse): UserSurveyA
  * *Note multichoice types should not enter this function because they
  * should be one hot encoded to categorical/choice.
  */
-function getFeatureType(formType: string): string {
+function getFeatureType(formType: string): FeatureType {
   switch (formType) {
     case 'slider':
     case 'numerical':
