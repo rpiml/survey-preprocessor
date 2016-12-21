@@ -56,11 +56,19 @@ export async function getFeaturesCSV(schema: SurveySchema): Promise<string> {
 /*
  * Creates the csv using SurveySchema and array of UserSurveyAnswers.
  *
- * Iterate through each user survey to create a row
+ * Iterate through each user survey to create a row, the end result will look
+ * like the following...
+ *
+ * user_id, like-art, like-computer, went-to
+ * user1  ,    0    ,       1      ,    1
+ * user2  ,    1    ,       1      ,    2
+ * user3  ,    1    ,       0      ,    0
+ * user4  ,    0    ,       0      ,    3
+ *
  */
 export async function getTrainingCSV(schema: SurveySchema, surveysAnswers: Array<UserSurveyAnswers>) {
   // First row is the header with each question id (the first col is "user")
-  const csv = [['user'].concat(schema.questions.map(q => q.id))];
+  const csv = [['id'].concat(schema.questions.map(q => q.id))];
 
   // Iterate over each user survey
   surveysAnswers.forEach((userSurveyAnswers: UserSurveyAnswers) => {
@@ -92,6 +100,19 @@ export async function getTrainingCSV(schema: SurveySchema, surveysAnswers: Array
   });
 
   return convertToCSV(csv);
+}
+
+/*
+ * Get the CSV used to predict for a single Survey.
+ *
+ * The CSV will look like the following...
+ *
+ * user_id, like-art, like-computer, went-to
+ * user1  ,    0    ,       1      ,    1
+ */
+export async function getSurveyQueryCSV(schema: SurveySchema, survey: SurveyResponse): Promise<string> {
+  const surveyAnswers = convertToUserSurveyAnswers(survey);
+  return await getTrainingCSV(schema, [surveyAnswers]);
 }
 
 /*
@@ -187,7 +208,6 @@ function getFeatureType(formType: string): FeatureType {
     case 'text':
       return 'text';
     default:
-      console.log(`unknown feature type: ${formType}`);
-      return '';
+      throw new Error(`unknown feature type: ${formType}`);
   }
 }

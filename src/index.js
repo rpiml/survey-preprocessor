@@ -40,6 +40,7 @@ export async function listen() {
   });
 
   rmq.rpcReply("json-predict", async (jsonString: string) => {
+    
     // const survey = JSON.parse(jsonString);
   });
 }

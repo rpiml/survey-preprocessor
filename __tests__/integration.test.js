@@ -1,10 +1,10 @@
 import { psql, rmq, redis } from '@seveibar/okc-js';
 import path from 'path';
 
-import ex1_p1 from './ex1/form_predict1.json';
-import ex1_p2 from './ex1/form_predict2.json';
-import ex1_p3 from './ex1/form_predict3.json';
-import ex1_p4 from './ex1/form_predict4.json';
+import ex1_p1 from './ex1/form_train1.json';
+import ex1_p2 from './ex1/form_train2.json';
+import ex1_p3 from './ex1/form_train3.json';
+import ex1_p4 from './ex1/form_train4.json';
 import form from './ex1/form.json';
 import { listen } from '../src';
 

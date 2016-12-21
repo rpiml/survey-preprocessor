@@ -3,7 +3,7 @@
 export type SurveyQuestionType = "slider" | "numerical" | "choice" |
                                   "multichoice" | "text";
 
-export type FeatureType = "categorical" | "numerical";
+export type FeatureType = "categorical" | "numerical" | 'text';
 
 /*
  * Original survey object that contains all survey information.
