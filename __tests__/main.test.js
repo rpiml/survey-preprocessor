@@ -5,6 +5,7 @@ import ex1_p1 from './ex1/form_train1.json';
 import ex1_p2 from './ex1/form_train2.json';
 import ex1_p3 from './ex1/form_train3.json';
 import ex1_p4 from './ex1/form_train4.json';
+import testPredictionQuery from './ex1/form_predict1.json';
 import form from './ex1/form.json';
 
 import { constructCSVs, getSurveySchema, getSurveyQueryCSV } from '../src/parse';
@@ -105,44 +106,11 @@ describe('ex1 survey test', () => {
   });
 
   it('should construct a single survey csv', async () => {
-    const querycsv = await getSurveyQueryCSV(correctSchema, {
-      uuid: 'user1',
-      content: {
-        firstPage: "start",
-        pages: [
-          {
-            id: "start",
-            questions: [
-              {
-                id: "like-art",
-                question: "Do you like art?",
-                type: "choice",
-                answer: "no",
-                answers: [
-                  "no",
-                  "yes"
-                ]
-              },
-              {
-                id: "like-computer",
-                question: "Do you like computer?",
-                type: "choice",
-                answer: "yes",
-                answers: [
-                  "no",
-                  "yes"
-                ]
-              }
-            ],
-            next: "done"
-          }
-        ]
-      }
-    });
+    const querycsv = await getSurveyQueryCSV(correctSchema, testPredictionQuery);
 
     const parsed = querycsv.split('\n').map(r => r.split(','));
     expect(parsed[0]).toEqual(['id', 'like-art', 'like-computer', 'went-to']);
-    expect(parsed[1]).toEqual(['user1', '0', '1', '']);
+    expect(parsed[1]).toEqual(['user1', '1', '0', '']);
 
   });
 });

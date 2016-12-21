@@ -2,7 +2,7 @@
 
 import { psql, rmq, redis } from '@seveibar/okc-js';
 import fs from 'fs';
-import { constructCSVs, getSurveySchema } from './parse';
+import { constructCSVs, getSurveySchema, getSurveyQueryCSV } from './parse';
 
 import type { SurveySchema } from './types.flow';
 
@@ -23,9 +23,17 @@ async function loadSchema(): SurveySchema {
   }
 }
 
+async function getCollegeIndices(schema: SurveySchema): Array<string>{
+  if (!process.env.COLLEGE_QUESTION_ID){
+    throw new Error("COLLEGE_QUESTION_ID not defined!");
+  }
+  return schema.questions.find(o => o.id == process.env.COLLEGE_QUESTION_ID).categories;
+}
+
 export async function listen() {
   // Generate schema
   const schema = await loadSchema();
+  const collegeIndices = await getCollegeIndices(schema);
 
   rmq.rpcReply('generate-survey-training-csv', async () => {
     const client = await redis.getClient();
@@ -40,8 +48,18 @@ export async function listen() {
   });
 
   rmq.rpcReply("json-predict", async (jsonString: string) => {
-    
-    // const survey = JSON.parse(jsonString);
+    const surveyResponse = JSON.parse(jsonString);
+    const surveyCSV = await getSurveyQueryCSV(schema, surveyResponse);
+    const predictionCSV = await rmq.rpc('csv-predict', surveyCSV);
+    const predictions = predictionCSV.split('\n').map(r => r.split(',')).slice(1).map((r) => {
+      const [collegeIndex, score] = r;
+      return {
+        name: collegeIndices[parseInt(collegeIndex, 10)],
+        index: parseInt(collegeIndex, 10),
+        score: parseFloat(score)
+      };
+    });
+    return { predictions };
   });
 }
 

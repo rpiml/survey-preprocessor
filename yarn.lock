@@ -10,9 +10,9 @@
     deep-eql "^0.1.3"
     keypather "^1.10.2"
 
-"@seveibar/okc-js@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@seveibar/okc-js/-/okc-js-0.0.4.tgz#6c978d92b2c54ec6c76cebba1f6a051c01c2a489"
+"@seveibar/okc-js@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@seveibar/okc-js/-/okc-js-0.0.5.tgz#8129f74ef77ab56ee5cc89afc786fd61591b3aa9"
   dependencies:
     amqplib "^0.5.1"
     amqplib-rpc "^2.0.3"
