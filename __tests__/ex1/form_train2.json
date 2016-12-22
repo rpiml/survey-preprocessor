@@ -12,7 +12,7 @@
             "no",
             "yes"
           ],
-          "answer": "no"
+          "answer": "yes"
         },
         {
           "id": "like-computer",
@@ -23,6 +23,18 @@
             "yes"
           ],
           "answer": "yes"
+        },
+        {
+          "id": "went-to",
+          "question": "Where did you go?",
+          "type": "choice",
+          "answer": "digital-arts-school",
+          "answers": [
+            "fine-arts-school",
+            "computer-school",
+            "digital-arts-school",
+            "culinary-college"
+          ]
         }
       ],
       "next": "done"

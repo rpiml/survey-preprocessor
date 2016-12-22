@@ -1,31 +1,34 @@
 {
-  "firstPage": "start",
-  "pages": [
-    {
-      "id": "start",
-      "questions": [
-        {
-          "id": "like-art",
-          "question": "Do you like art?",
-          "type": "choice",
-          "answers": [
-            "no",
-            "yes"
-          ],
-          "answer": "no"
-        },
-        {
-          "id": "like-computer",
-          "question": "Do you like computer?",
-          "type": "choice",
-          "answers": [
-            "no",
-            "yes"
-          ],
-          "answer": "yes"
-        }
-      ],
-      "next": "done"
-    }
-  ]
+  "uuid": "user1",
+  "content": {
+    "firstPage": "start",
+    "pages": [
+      {
+        "id": "start",
+        "questions": [
+          {
+            "id": "like-art",
+            "question": "Do you like art?",
+            "type": "choice",
+            "answer": "yes",
+            "answers": [
+              "no",
+              "yes"
+            ]
+          },
+          {
+            "id": "like-computer",
+            "question": "Do you like computer?",
+            "type": "choice",
+            "answer": "no",
+            "answers": [
+              "no",
+              "yes"
+            ]
+          }
+        ],
+        "next": "done"
+      }
+    ]
+  }
 }

@@ -22,10 +22,20 @@
       1,
       "always"
     ],
+    "no-trailing-spaces": 1,
+    "camelcase": 1,
+    "quotes": 0,
+    "no-unused-vars": 1,
+    "import/prefer-default-export": 1,
+    "padded-blocks": 1,
     "flowtype/space-after-type-colon": [
       1,
       "always"
     ],
+    'one-var': 1,
+    'one-var-declaration-per-line':1,
+    'trailing-comma': 0,
+    'comma-dangle': 0,
     "keyword-spacing": 1,
     "space-before-blocks": [1],
     "flowtype/require-return-type": [

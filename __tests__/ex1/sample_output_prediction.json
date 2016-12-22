@@ -1,0 +1,24 @@
+{
+  "predictions": [
+    {
+      "name": "fine-arts-school",
+      "index": 0,
+      "score": 1
+    },
+    {
+      "name": "digital-arts-school",
+      "index": 2,
+      "score": 0.5
+    },
+    {
+      "name": "culinary-college",
+      "index": 3,
+      "score": 0.5
+    },
+    {
+      "name": "computer-school",
+      "index": 1,
+      "score": 0
+    }
+  ]
+}

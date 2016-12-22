@@ -22,7 +22,19 @@
             "no",
             "yes"
           ],
-          "answer": "yes"
+          "answer": "no"
+        },
+        {
+          "id": "went-to",
+          "question": "Where did you go?",
+          "type": "choice",
+          "answer": "culinary-college",
+          "answers": [
+            "fine-arts-school",
+            "computer-school",
+            "digital-arts-school",
+            "culinary-college"
+          ]
         }
       ],
       "next": "done"

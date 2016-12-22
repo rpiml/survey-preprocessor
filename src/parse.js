@@ -5,14 +5,14 @@
  * For generating the survey_features.csv...
  * 1. Convert the form.json into a SurveySchema, which has the question/answer mapping
  *    without "pages" or other information in the survey.
- * 2. Iterate over the questions in the schema to create CSV
+ * 2. Iterate over the questions in the schema to create CSV. See getFeaturesCSV().
  *
  * For generating the survey_training.csv...
  * 1. Convert or get the previously created SurveySchema.
  * 2. Convert each user's survey into UserSurveyAnswers, to store the
  *    question/answer association and perform one hot encoding.
  * 3. Iterate over every user and set the appropriate rows in the CSV
- *    for the supplied SurveySchema
+ *    for the supplied SurveySchema. See getTrainingCSV().
  */
  // @flow
 
@@ -22,6 +22,7 @@ import type {
   UserSurveyAnswers,
   SurveyResponse,
   SurveySchema,
+  FeatureType,
 } from './types.flow';
 
 /*
@@ -36,15 +37,18 @@ import type {
  */
 export async function getFeaturesCSV(schema: SurveySchema): Promise<string> {
   // First row header
-  const csv = [['feature', 'categories']];
-  schema.questions.forEach((question) => {
+  let csv = [['feature', 'categories']];
+  csv = csv.concat(schema.questions.map((question) => {
     const questionType = getFeatureType(question.type);
-    if (questionType !== 'category') {
+    if (questionType !== 'categorical') {
       return [question.id, questionType];
+    }
+    if (!question.categories) {
+      throw new Error('Category type question did not define categories');
     }
     // Return all the possible categories after the definition
     return [question.id, questionType, question.categories.length].concat(question.categories);
-  });
+  }));
 
   return await convertToCSV(csv);
 }
@@ -52,39 +56,63 @@ export async function getFeaturesCSV(schema: SurveySchema): Promise<string> {
 /*
  * Creates the csv using SurveySchema and array of UserSurveyAnswers.
  *
- * Iterate through each user survey to create a row
+ * Iterate through each user survey to create a row, the end result will look
+ * like the following...
+ *
+ * user_id, like-art, like-computer, went-to
+ * user1  ,    0    ,       1      ,    1
+ * user2  ,    1    ,       1      ,    2
+ * user3  ,    1    ,       0      ,    0
+ * user4  ,    0    ,       0      ,    3
+ *
  */
 export async function getTrainingCSV(schema: SurveySchema, surveysAnswers: Array<UserSurveyAnswers>) {
   // First row is the header with each question id (the first col is "user")
-  const csv = [['user'].concat(schema.questions.map(q => q.id))];
+  const csv = [['id'].concat(schema.questions.map(q => q.id))];
 
   // Iterate over each user survey
   surveysAnswers.forEach((userSurveyAnswers: UserSurveyAnswers) => {
-
     const userUUID = userSurveyAnswers.uuid;
-    const userAnswers = userSurveyAnswers.questions;
+    const userAnswers = userSurveyAnswers.answers;
 
     // Iterate over schema and fill in user values into proper column
     const row = [userUUID].concat(schema.questions.map((schemaQuestion) => {
+      // Check if user answered question
+      if (!userAnswers[schemaQuestion.id]) return '';
 
       const userAnswer = userAnswers[schemaQuestion.id];
-      const userAnsweredQuestion = userAnswer !== undefined;
 
-      if (!userAnsweredQuestion) return '';
-
-      if (schemaQuestion.type === 'choice') {
-        // Find the index of the user answer from the schema
-        return schemaQuestion.categories.indexOf(userAnswer.answer);
-      } else if (schemaQuestion.type === 'slider') {
-        return userAnswer.answer;
+      switch (schemaQuestion.type) {
+        case 'choice':
+          if (!schemaQuestion.categories) {
+            throw new Error('Choice question did not define categories');
+          }
+          return schemaQuestion.categories.indexOf(userAnswer);
+        case 'slider':
+          return userAnswer;
+        case 'text':
+          return userAnswer;
+        default:
+          return '';
       }
-
-      return '';
     }));
     csv.push(row);
   });
 
   return convertToCSV(csv);
+}
+
+/*
+ * Get the CSV used to predict for a single Survey.
+ *
+ * The CSV will look like the following...
+ *
+ * user_id, like-art, like-computer, went-to
+ * user1  ,    0    ,       1      ,    1
+ */
+export async function getSurveyQueryCSV(schema: SurveySchema, survey: SurveyResponse): Promise<string> {
+  const surveyAnswers = convertToUserSurveyAnswers(survey);
+  return await getTrainingCSV(schema, [surveyAnswers]);
 }
 
 /*
@@ -117,7 +145,7 @@ export async function getSurveySchema(form: Survey): Promise<SurveySchema> {
       } else {
         // Multichoice, perform one hot encoding to make multichoice options
         // just a series of choice options
-        questions.push(...categories.map((c) => ({
+        questions.push(...categories.map(c => ({
           id: `${id}:${c}`,
           type: 'choice',
           categories: ['', '1'],
@@ -137,21 +165,26 @@ export async function getSurveySchema(form: Survey): Promise<SurveySchema> {
  * questions into choice questions.
  */
 function convertToUserSurveyAnswers(surveyResponse: SurveyResponse): UserSurveyAnswers {
-  const questions = {};
+  const answers = {};
   const survey = surveyResponse.content;
   survey.pages.forEach((page) => {
     page.questions.forEach((question) => {
-      if (question.type !== 'multichoice') {
-        questions[question.id] = { answer: question.answer };
-      } else {
-        const userAnswers = questions[question.id].answer;
-        userAnswers.forEach((answer) => {
-          questions[`${question.id}:${answer}`] = { answer: '1' };
-        });
+      switch (question.type) {
+        case 'multichoice': {
+          const userAnswers = answers[question.id].answer;
+          userAnswers.forEach((answer) => {
+            answers[`${question.id}:${answer}`] = '1';
+          });
+          break;
+        }
+        default: { // slider, choice, text
+          answers[question.id] = question.answer;
+          break;
+        }
       }
     });
   });
-  return { uuid: surveyResponse.uuid, questions };
+  return { uuid: surveyResponse.uuid, answers };
 }
 
 /*
@@ -165,12 +198,16 @@ function convertToUserSurveyAnswers(surveyResponse: SurveyResponse): UserSurveyA
  * *Note multichoice types should not enter this function because they
  * should be one hot encoded to categorical/choice.
  */
-function getFeatureType(formType: string): string {
+function getFeatureType(formType: string): FeatureType {
   switch (formType) {
     case 'slider':
     case 'numerical':
       return 'numerical';
     case 'choice':
       return 'categorical';
+    case 'text':
+      return 'text';
+    default:
+      throw new Error(`unknown feature type: ${formType}`);
   }
 }

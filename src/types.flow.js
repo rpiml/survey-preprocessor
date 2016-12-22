@@ -1,5 +1,10 @@
 // @flow
 
+export type SurveyQuestionType = "slider" | "numerical" | "choice" |
+                                  "multichoice" | "text";
+
+export type FeatureType = "categorical" | "numerical" | 'text';
+
 /*
  * Original survey object that contains all survey information.
  */
@@ -10,7 +15,7 @@ export type Survey = {
       id: string,
       question: string,
       answers: Array<string>,
-      type: string,
+      type: SurveyQuestionType,
       answer: ?string,
     }>,
     next: string,
@@ -31,13 +36,11 @@ export type SurveyResponse = {
  * The schema uses one hot encoding on multichoice answers.
  */
 export type SurveySchema = {
-  questions: [
-    {
+  questions: Array<{
       id: string,
-      type: string,
+      type: SurveyQuestionType,
       categories: ?Array<string>
-    }
-  ]
+    }>
 }
 
 /**
@@ -46,7 +49,5 @@ export type SurveySchema = {
  */
 export type UserSurveyAnswers = {
   uuid: string,
-  questions: Map<string, {
-    answer: string
-  }>
+  answers: {[string]: string}
 }
